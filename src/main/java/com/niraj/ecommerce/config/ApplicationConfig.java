@@ -21,14 +21,14 @@ public class ApplicationConfig {
         this.userRepository = userRepository;
     }
 
-    // 1. The Guest List: How to find a user in the database
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> (org.springframework.security.core.userdetails.UserDetails) userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
     }
 
-    // 2. The Database Checker: Wires the Guest List and the Password Encoder together
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -37,13 +37,13 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-    // 3. The Login Manager: We need this later for the AuthController to process logins
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // 4. The Password Encryptor: Never store plain text passwords!
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

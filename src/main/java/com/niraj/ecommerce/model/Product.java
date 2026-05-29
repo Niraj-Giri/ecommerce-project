@@ -26,13 +26,16 @@ public class Product {
     private String slug;
 
     @Column(nullable = false)
-    private Long mrp;
+    private Double mrp;
 
     @Column(nullable = false)
     private String imageUrl;
+    @Column(nullable = false)
+
+    private String description;
 
     @Column(nullable = false)
-    private Long price;
+    private Double price;
 
     private int quantity =1;
 

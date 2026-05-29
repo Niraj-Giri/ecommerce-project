@@ -32,7 +32,7 @@ public class User implements UserDetails {
      @JsonIgnore
      private String password;
 
-     @Column(nullable = false, unique = true)
+     @Column(nullable = false)
      @Enumerated(EnumType.STRING)
      private Role role=Role.USER;
 
@@ -46,15 +46,7 @@ public class User implements UserDetails {
      @UpdateTimestamp
      private LocalDateTime updatedAt;
 
- @Override
- public Collection<? extends GrantedAuthority> getAuthorities() {
-  return List.of();
- }
 
- @Override
- public String getUsername() {
-  return "";
- }
 
  @Override
  public boolean isAccountNonExpired() {
@@ -69,5 +61,13 @@ public class User implements UserDetails {
  @Override
  public boolean isCredentialsNonExpired() {
   return UserDetails.super.isCredentialsNonExpired();
+ }
+ @Override
+ public Collection<? extends GrantedAuthority> getAuthorities() {
+  return List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(role.name()));
+ }
+ @Override
+ public String getUsername() {
+  return this.email;
  }
 }

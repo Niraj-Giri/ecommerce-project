@@ -29,25 +29,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Turn off CSRF (Cross-Site Request Forgery) protection
+
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 2. Set the rules for which endpoints are public vs protected
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Anyone can login or register!
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // Only Admins
-                        .anyRequest().authenticated() // Everything else requires a valid JWT
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
                 )
 
-                // 3. Turn off Spring's default session memory
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // 4. Register our AuthenticationProvider (Database checker)
+
                 .authenticationProvider(authenticationProvider)
 
-                // 5. Put our Bouncer in front of the default Spring Security filter
+
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

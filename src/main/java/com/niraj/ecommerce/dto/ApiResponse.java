@@ -1,0 +1,22 @@
+package com.niraj.ecommerce.dto;
+
+import lombok.Data;
+
+@Data
+public class ApiResponse<T> {
+    private Boolean success;
+    private String message;
+    private T data;
+    //for sucess
+    public ApiResponse(Boolean success, String message, T data) {
+        this.success = success;
+        this.message = message;
+        this.data = data;
+
+    }
+    //for error
+   public  ApiResponse(Boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
+}
