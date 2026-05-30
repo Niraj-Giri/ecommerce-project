@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGlobalException(Exception ex) {
 
-        ApiResponse<Void> response = new ApiResponse<>(false, "An unexpected error occurred on the server.");
+        ApiResponse<Void> response = new ApiResponse<>(false, ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(BadCredentialsException.class)

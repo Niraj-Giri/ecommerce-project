@@ -37,7 +37,7 @@ public class Product {
     @Column(nullable = false)
     private Double price;
 
-    private int quantity =1;
+    private Long quantity =1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)

@@ -3,9 +3,7 @@ package com.niraj.ecommerce.controller;
 import com.niraj.ecommerce.dto.ApiResponse;
 import com.niraj.ecommerce.dto.CategoryAddRequest;
 import com.niraj.ecommerce.dto.CategoryResponse;
-import com.niraj.ecommerce.model.Category;
 import com.niraj.ecommerce.service.CategoryService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
-public class CategoryController {
+public class AdminCategoryController {
 
     private final CategoryService categoryService;
-    public CategoryController(CategoryService categoryService) {
+    public AdminCategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
