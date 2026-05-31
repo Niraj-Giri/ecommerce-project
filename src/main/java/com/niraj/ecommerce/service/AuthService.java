@@ -13,8 +13,10 @@ import com.niraj.ecommerce.jwt.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -32,7 +34,9 @@ public class AuthService {
     }
 
     public ApiResponse<AuthResponse> register(RegisterRequest request) {
+        log.info("Registering new user with email: {}", request.getEmail());
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Registration failed - email already exists: {}", request.getEmail());
             throw new ResourceAlreadyExistsException("Email already exists");
         }
         User user = new User();
@@ -50,15 +54,20 @@ public class AuthService {
     }
 
     public ApiResponse<AuthResponse> login(LoginRequest request) {
+        log.info("Attempting login for user with email: {}", request.getEmail());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new ResourceNotFoundException("User not found!"));
+                .orElseThrow(()-> {
+                    log.warn("Login failed - user not found with email: {}", request.getEmail());
+                    return new ResourceNotFoundException("User not found!");
+                });
 
         String jwtToken = jwtUtil.generateToken(user);
         AuthResponse authResponse = new AuthResponse(jwtToken);
+        log.info("User logged in successfully: {}", request.getEmail());
         return new ApiResponse<AuthResponse>(true, "Login successful", authResponse);
     }
 }

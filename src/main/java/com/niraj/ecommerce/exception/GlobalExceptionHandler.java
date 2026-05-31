@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedAccess(UnauthorizedAccessException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(false, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
@@ -31,11 +36,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
 
-        // SECURITY PRO-TIP: Never say "Wrong password". Always say "Invalid email or password."
-        // This prevents hackers from knowing if an email actually exists in your database!
+
         ApiResponse<Void> response = new ApiResponse<>(false, "Invalid email or password.");
 
-        // Return 401 UNAUTHORIZED
+
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }

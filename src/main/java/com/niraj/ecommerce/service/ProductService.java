@@ -8,11 +8,13 @@ import com.niraj.ecommerce.model.Category;
 import com.niraj.ecommerce.model.Product;
 import com.niraj.ecommerce.repository.CategoryRepository;
 import com.niraj.ecommerce.repository.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProductService {
 
@@ -24,6 +26,7 @@ public class ProductService {
     }
 
     public ApiResponse<List<ProductResponse>> findByCategoryId(Long id) {
+        log.info("Fetching products for category ID: {}", id);
         List<ProductResponse> productResponses = productRepository.findByCategoryId(id)
                 .stream()
                 .map(ProductResponse::new)
@@ -33,6 +36,7 @@ public class ProductService {
     }
 
     public ApiResponse<Void> addProduct(ProductAddRequest productAddRequest ,Long id) {
+        log.info("Adding new product with name: {} to category ID: {}", productAddRequest.getName(), id);
         Product product = new Product();
         product.setName(productAddRequest.getName());
         product.setMrp(productAddRequest.getMrp());
@@ -51,6 +55,7 @@ public class ProductService {
     }
 
     public ApiResponse<Void> updateCategory(ProductAddRequest productAddRequest, Long id) {
+        log.info("Updating product ID: {} with name: {}", id, productAddRequest.getName());
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         product.setName(productAddRequest.getName());
@@ -65,6 +70,7 @@ public class ProductService {
     }
 
     public ApiResponse<Void> removeCategory(Long id) {
+        log.info("Removing/Deactivating product ID: {}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         product.setActive(false);
