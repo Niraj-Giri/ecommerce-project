@@ -5,6 +5,7 @@ import com.niraj.ecommerce.dto.CartAddRequest;
 import com.niraj.ecommerce.dto.CartItemResponse;
 import com.niraj.ecommerce.dto.CartResponse;
 import com.niraj.ecommerce.dto.CartUpdateRequest;
+import com.niraj.ecommerce.exception.BadRequestException;
 import com.niraj.ecommerce.exception.ResourceNotFoundException;
 import com.niraj.ecommerce.exception.UnauthorizedAccessException;
 import com.niraj.ecommerce.model.Cart;
@@ -15,6 +16,7 @@ import com.niraj.ecommerce.repository.CartRepository;
 import com.niraj.ecommerce.repository.ProductRepository;
 import com.niraj.ecommerce.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -133,11 +135,16 @@ public class CartService {
         if (cartUpdateRequest.getQuantity() == null || cartUpdateRequest.getQuantity() <= 0) {
             cartItemRepository.delete(cartItem);
             return new ApiResponse<>(true, "Item removed from cart", null);
-        } else {
-            cartItem.setQuantity(cartUpdateRequest.getQuantity());
-            cartItemRepository.save(cartItem);
-            return new ApiResponse<>(true, "Quantity updated successfully", null);
+        } Product product = cartItem.getProduct();
+
+        if (cartUpdateRequest.getQuantity() > product.getQuantity()) {
+            throw new BadRequestException("Only " + product.getQuantity() + " items available in stock");
         }
+
+        cartItem.setQuantity(cartUpdateRequest.getQuantity());
+        cartItemRepository.save(cartItem);
+
+        return new ApiResponse<>(true, "Quantity updated successfully", null);
     }
 
     public ApiResponse<Void> removeCart(Long userId) {

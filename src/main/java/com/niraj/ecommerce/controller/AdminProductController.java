@@ -5,6 +5,7 @@ import com.niraj.ecommerce.dto.CategoryAddRequest;
 import com.niraj.ecommerce.dto.ProductAddRequest;
 import com.niraj.ecommerce.dto.ProductResponse;
 import com.niraj.ecommerce.service.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/product")
+@RequestMapping("api/admin/product")
 public class AdminProductController {
 
        private final ProductService productService;
@@ -20,12 +21,17 @@ public class AdminProductController {
               this.productService = productService;
        }
 
-        @GetMapping("/category/{id}")
-        public ResponseEntity<ApiResponse<List<ProductResponse>>> findByCategoryId(@PathVariable  Long id) {
+     @GetMapping("/{categoryId}")
+     public ResponseEntity<ApiResponse<Page<ProductResponse>>> getProductsByCategoryId(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-            ApiResponse<List<ProductResponse>> productList=productService.findByCategoryId(id);
-            return ResponseEntity.ok(productList);
-        }
+        ApiResponse<Page<ProductResponse>> products =
+                productService.findByCategoryId(categoryId, page, size);
+
+        return ResponseEntity.ok(products);
+    }
         @PostMapping("/category/add/{id}")
         @PreAuthorize("hasAuthority('ADMIN')")
          public ResponseEntity<ApiResponse> addProduct(@PathVariable  Long id, @RequestBody ProductAddRequest  productAddRequest) {
