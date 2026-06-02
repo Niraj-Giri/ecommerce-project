@@ -28,5 +28,5 @@ public class OrderItem {
     private Long quantity;
 
     @Column(nullable = false)
-    private Long priceAtPurchase;
+    private Double priceAtPurchase;
 }

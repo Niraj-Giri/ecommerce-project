@@ -42,7 +42,7 @@ public class ProductController {
         ApiResponse<ProductResponse> product=productService.getProductById(productId);
         return ResponseEntity.ok(product);
     }
-    @GetMapping("/image/{productId")
+    @GetMapping("/image/{productId}")
     public ResponseEntity<ApiResponse<String>> getProductImageById(@PathVariable Long productId) {
         ApiResponse<String> imageUrl=productService.getImageById(productId);
         return ResponseEntity.ok(imageUrl);

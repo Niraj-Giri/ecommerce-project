@@ -48,7 +48,7 @@ public class ProductService {
         );
     }
 
-    public ApiResponse<Void> addProduct(ProductAddRequest productAddRequest ,Long id) {
+    public ApiResponse<ProductResponse> addProduct(ProductAddRequest productAddRequest ,Long id) {
         log.info("Adding new product with name: {} to category ID: {}", productAddRequest.getName(), id);
         Product product = new Product();
         product.setName(productAddRequest.getName());
@@ -62,12 +62,12 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         product.setCategory(category);
-        productRepository.save(product);
-        return new ApiResponse<>(true,"Product added successfully",null);
+        Product saved = productRepository.save(product);
+        return new ApiResponse<>(true, "Product added successfully", new ProductResponse(saved));
 
     }
 
-    public ApiResponse<Void> updateCategory(ProductAddRequest productAddRequest, Long id) {
+    public ApiResponse<ProductResponse> updateCategory(ProductAddRequest productAddRequest, Long id) {
         log.info("Updating product ID: {} with name: {}", id, productAddRequest.getName());
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -78,8 +78,8 @@ public class ProductService {
         product.setDescription(productAddRequest.getDescription());
         product.setQuantity(productAddRequest.getQuantity());
         product.setSlug(productAddRequest.getSlug());
-       productRepository.save(product);
-       return new ApiResponse<>(true,"Product updated successfully",null);
+        Product saved = productRepository.save(product);
+        return new ApiResponse<>(true, "Product updated successfully", new ProductResponse(saved));
     }
 
     public ApiResponse<Void> removeCategory(Long id) {

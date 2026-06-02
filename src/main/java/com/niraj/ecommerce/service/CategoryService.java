@@ -51,7 +51,7 @@ public class CategoryService {
                 response
         );
     }
-    public ApiResponse<Void> addCategory(CategoryAddRequest categoryAddRequest) {
+    public ApiResponse<CategoryResponse> addCategory(CategoryAddRequest categoryAddRequest) {
         log.info("Adding new category with name: {}", categoryAddRequest.getName());
         Category category = new Category();
         category.setName(categoryAddRequest.getName());
@@ -62,10 +62,10 @@ public class CategoryService {
 
                     .orElseThrow(() -> new ResourceNotFoundException("Parent category not found")));
         }
-        categoryRepository.save(category);
-        return new ApiResponse<>(true,"Category added successfully",null);
+        Category saved = categoryRepository.save(category);
+        return new ApiResponse<>(true, "Category added successfully", new CategoryResponse(saved));
     }
-    public ApiResponse<Void> updateCategory(CategoryAddRequest categoryAddRequest,Long id) {
+    public ApiResponse<CategoryResponse> updateCategory(CategoryAddRequest categoryAddRequest,Long id) {
          log.info("Updating category ID: {} with name: {}", id, categoryAddRequest.getName());
          Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -77,8 +77,8 @@ public class CategoryService {
 
                      .orElseThrow(() -> new ResourceNotFoundException("Parent category not found")));
          }
-         categoryRepository.save(category);
-         return new ApiResponse<>(true,"Category updated successfully",null);
+         Category saved = categoryRepository.save(category);
+         return new ApiResponse<>(true, "Category updated successfully", new CategoryResponse(saved));
     }
 
     public ApiResponse<Void> removeCategory(Long id) {

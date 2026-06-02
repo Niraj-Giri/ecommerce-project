@@ -33,15 +33,17 @@ public class Order {
     @Column(nullable = false)
     private Double totalPrice;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_address_id")
+    private OrderAddress orderAddress;
 
     private Double discountAmount ;
-
+    
+    private String orderId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    @Column(columnDefinition = "TEXT")
-    private String shippingAddress;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items = new ArrayList<>();
