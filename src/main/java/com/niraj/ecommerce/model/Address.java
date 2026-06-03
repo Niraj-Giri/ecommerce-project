@@ -21,7 +21,9 @@ public class Address {
     private String mobile;
     private String  house;
     private String fullName;
-    @OneToOne
-    @JoinColumn(name = "user_id")
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
 }

@@ -10,8 +10,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderService {
@@ -93,6 +95,7 @@ public class OrderService {
 
         order.setItems(orderItems);
         order.setTotalPrice(totalPrice);
+        order.setOrderId(generateOrderNumber());
 
         Order savedOrder = orderRepository.save(order);
 
@@ -100,11 +103,8 @@ public class OrderService {
         cart.getItems().clear();
         cartRepository.save(cart);
 
-        OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setOrderId(savedOrder.getId());
-        orderResponse.setStatus(savedOrder.getOrderStatus().name());
-        orderResponse.setTotalAmount(savedOrder.getTotalPrice());
-        orderResponse.setOrderDate(savedOrder.getCreatedAt());
+        OrderResponse orderResponse = mapToOrderResponse(order);
+
 
         return new ApiResponse<>(
                 true,
@@ -112,4 +112,85 @@ public class OrderService {
                 orderResponse
         );
     }
+
+    public ApiResponse<OrderResponse> getOrderById(Long orderId, User user) {
+        Order order=orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        if(!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("User does not belong to order");
+        }
+        OrderResponse orderResponse = mapToOrderResponse(order);
+
+
+        return new ApiResponse<>(true,"Order retrieved successfully",orderResponse);
+    }
+
+    public ApiResponse<Void> cancelOrder(Long orderId, User user) {
+        Order order=orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        if(!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("User does not belong to order");
+        }
+        order.setOrderStatus(OrderStatus.CANCELED);
+        orderRepository.save(order);
+        return new ApiResponse<>(true,"Order cancelled successfully",null);
+    }
+
+    public ApiResponse<List<OrderResponse>> getAllOrder(Long id) {
+        List<OrderResponse> orderResponse=orderRepository.findByUserId(id)
+                .stream()
+                .map(this::mapToOrderResponse)
+                .toList();
+
+        return new ApiResponse<>(true,"Orders retrieved successfully",orderResponse);
+    }
+
+    public ApiResponse<List<OrderResponse>> getOrdersBystatus(String status, Long userId) {
+
+        OrderStatus orderStatus;
+
+        try {
+            orderStatus = OrderStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid order status: " + status);
+        }
+
+        List<Order> orders = orderRepository
+                .findByUserIdAndOrderStatus(userId, orderStatus);
+
+        List<OrderResponse> responses = orders.stream()
+                .map(this::mapToOrderResponse)
+                .toList();
+
+        return new ApiResponse<>(
+                true,
+                "Orders retrieved successfully",
+                responses
+        );
+    }
+
+    public String generateOrderNumber() {
+        String randomPart = UUID.randomUUID()
+                .toString()
+                .substring(0, 6)
+                .toUpperCase();
+
+        return "ORD-" +
+                LocalDate.now().toString().replace("-", "") +
+                "-" +
+                randomPart;
+    }
+    private OrderResponse mapToOrderResponse(Order order) {
+
+        return OrderResponse.builder()
+                .id(order.getId())
+                .orderId(order.getOrderId())
+                .orderDate(order.getCreatedAt())
+                .status(order.getOrderStatus().toString())
+                .totalAmount(order.getTotalPrice())
+                .build();
+    }
+
+
+
 }
