@@ -72,6 +72,16 @@ public class AddressService {
         return new ApiResponse<>(true,"Address updated successfully",null);
     }
 
+    public ApiResponse<Void> deleteAddress(Long addressId, Long userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+        if (!address.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Address not found for this user");
+        }
+        addressRepository.delete(address);
+        return new ApiResponse<>(true, "Address deleted successfully", null);
+    }
+
     private AddressResponse mapToResponse(Address address) {
         return AddressResponse.builder()
                 .id(address.getId())

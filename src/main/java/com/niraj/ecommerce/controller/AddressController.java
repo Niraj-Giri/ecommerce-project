@@ -43,4 +43,11 @@ public class AddressController {
         ApiResponse<Void> apiResponse=addressService.updateAddress(addAddressRequest,user.getId(),addressId);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/delete/{addressId}")
+    public ResponseEntity<ApiResponse<Void>> deleteAddress(@PathVariable Long addressId) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ApiResponse<Void> apiResponse = addressService.deleteAddress(addressId, user.getId());
+        return ResponseEntity.ok(apiResponse);
+    }
 }

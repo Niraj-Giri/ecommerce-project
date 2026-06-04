@@ -22,13 +22,13 @@ public class CartController {
          this.cartService = cartService;
      }
 
-     @GetMapping("/{id}")
-     public ResponseEntity<ApiResponse<CartResponse>> getCart(@PathVariable Long id) {
+     @GetMapping("/{userId}")
+     public ResponseEntity<ApiResponse<CartResponse>> getCart(@PathVariable Long userId) {
          User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-         if (!user.getId().equals(id)) {
+         if (!user.getId().equals(userId)) {
              throw new UnauthorizedAccessException("You are not authorized to view this cart.");
          }
-         ApiResponse<CartResponse> cartResponse = cartService.getCart(id);
+         ApiResponse<CartResponse> cartResponse = cartService.getCart(userId);
          return new ResponseEntity<>(cartResponse, HttpStatus.OK);
      }
 

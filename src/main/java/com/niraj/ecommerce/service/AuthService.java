@@ -49,7 +49,12 @@ public class AuthService {
         userRepository.save(user);
 
         String jwtToken = jwtUtil.generateToken(user);
-        AuthResponse authResponse = new AuthResponse(jwtToken);
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setJwtToken(jwtToken);
+        authResponse.setFirstName(user.getFirstName());
+        authResponse.setLastName(user.getLastName());
+        authResponse.setEmail(user.getEmail());
+        authResponse.setMobile(user.getMobile());
         return new ApiResponse<AuthResponse>(true, "Registration successful", authResponse);
     }
 
@@ -66,7 +71,14 @@ public class AuthService {
                 });
 
         String jwtToken = jwtUtil.generateToken(user);
-        AuthResponse authResponse = new AuthResponse(jwtToken);
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setJwtToken(jwtToken);
+        authResponse.setFirstName(user.getFirstName());
+        authResponse.setLastName(user.getLastName());
+        authResponse.setEmail(user.getEmail());
+        authResponse.setMobile(user.getMobile());
+
+
         log.info("User logged in successfully: {}", request.getEmail());
         return new ApiResponse<AuthResponse>(true, "Login successful", authResponse);
     }
